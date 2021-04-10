@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<!--    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />-->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+
+    <meta name="description" content="Tool to merge subtitles">
+    <meta property="og:title" content="SubTool">
+    <meta property="og:description" content="Tool to merge subtitles">
+
+    <title>Subtool</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type='text/javascript'>
+      var Module = {
+        print: function (text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          console.log(text);
+        },
+        printErr: function (text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          console.error(text);
+        }
+      };
+
+      function load() {
+        var script = document.createElement("script");
+        script.async = !0;
+        script.type = "text/javascript";
+        script.src = "subtitles.js";
+        script.onerror = function (t) {
+          console.error("Script Error");
+          console.error(t);
+        };
+        var r = document.getElementsByTagName("script")[0];
+        r.parentNode.insertBefore(script, r);
+      }
+
+      load();
+    </script>
+  </body>
+</html>

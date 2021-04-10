@@ -1,0 +1,1 @@
+// This is an empty header to compile libass without automake
