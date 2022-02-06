@@ -51,7 +51,7 @@ mkdir build
 cd build
 
 emcmake cmake ..
-make
+emmake make
 
 cd ..
 rm -r build
