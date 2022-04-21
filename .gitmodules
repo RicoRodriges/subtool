@@ -1,3 +1,6 @@
 [submodule "cpp/libass"]
 	path = cpp/libass
 	url = https://github.com/libass/libass.git
+[submodule "cpp/vlc"]
+	path = cpp/vlc
+	url = https://github.com/videolan/vlc
