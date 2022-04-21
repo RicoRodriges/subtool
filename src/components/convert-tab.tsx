@@ -1,24 +1,12 @@
-import React, {useRef, useState} from "react";
-import {Card, Nav} from "react-bootstrap";
-import {useStore} from "../index";
-import {ReturnCode} from "../types";
-import {observer} from "mobx-react";
-import SingleSubtitleTab from "./convert-tab/single-subtitle-tab";
-import SummarySubtitleTab from "./convert-tab/summary-subtitle-tab";
-import SubtitleForm, {FormData} from "./subtitle-form";
-
-function errorCodeToString(e?: ReturnCode) {
-    switch (e) {
-        case ReturnCode.ERROR:
-        case ReturnCode.MALLOC_ERROR:
-            return 'Something went wrong. Try another file :(';
-        case ReturnCode.UNKNOWN_SUBTITLE_FORMAT:
-            return 'Unknown subtitle format';
-        case ReturnCode.FPS_NOT_SET:
-            return 'FPS is required for this format of subtitle';
-    }
-    return undefined;
-}
+import React, {useRef, useState} from 'react';
+import {Card, Nav} from 'react-bootstrap';
+import {useStore} from '../index';
+import {observer} from 'mobx-react-lite';
+import SingleSubtitleTab from './convert-tab/single-subtitle-tab';
+import SummarySubtitleTab from './convert-tab/summary-subtitle-tab';
+import SubtitleForm, {FormData} from './subtitle-form';
+import {SubtitleFile} from '../stores/subtitle-store';
+import {runInAction} from "mobx";
 
 enum Tabs {
     FIRST_SUBTITLE = 'Subtitle 1',
@@ -33,27 +21,30 @@ function ConvertTab() {
     const formElement = useRef<HTMLDivElement>(null);
     const subtitleElement = useRef<HTMLDivElement>(null);
 
-    const firstSubtitleError = errorCodeToString(subtitleStore.firstSubtitle.parseCode);
-    const secondSubtitleError = errorCodeToString(subtitleStore.secondSubtitle.parseCode);
-
     const processFile = (d: FormData) => {
         setProcessing(true);
 
-        const file2 = (d.secondSubtitle && d.secondSubtitle.file) || undefined;
-        const fps2 = (d.secondSubtitle && d.secondSubtitle.fps) || undefined;
-        const encoding2 = (d.secondSubtitle && d.secondSubtitle.encoding) || undefined;
-        const speed2 = (d.secondSubtitle && d.secondSubtitle.speed) || undefined;
+        const s1: SubtitleFile = {
+            f: d.firstSubtitle.file,
+            encoding: d.firstSubtitle.encoding,
+            fps: d.firstSubtitle.fps,
+            speed: d.firstSubtitle.speed,
+            offset: 0,
+        };
 
-        subtitleStore.align = d.align;
-        subtitleStore.loadSubtitles(d.firstSubtitle.file, d.firstSubtitle.encoding, d.firstSubtitle.fps, d.firstSubtitle.speed,
-            file2, encoding2, fps2, speed2, d.synchronization)
+        const s2: SubtitleFile | undefined = !d.secondSubtitle ? undefined : {
+            f: d.secondSubtitle.file,
+            encoding: d.secondSubtitle.encoding,
+            fps: d.secondSubtitle.fps,
+            speed: d.secondSubtitle.speed,
+            offset: d.offset,
+        };
+
+        runInAction(() => subtitleStore.align = d.align);
+        subtitleStore.loadSubtitles(s1, s2)
             .then(
-                () => {
-                    subtitleElement.current && subtitleElement.current.scrollIntoView({block: "start", behavior: "smooth"});
-                },
-                () => {
-                    formElement.current && formElement.current.scrollIntoView({block: "start", behavior: "smooth"});
-                }
+                () => subtitleElement.current?.scrollIntoView({block: "start", behavior: "smooth"}),
+                () => formElement.current?.scrollIntoView({block: "start", behavior: "smooth"}),
             )
             .finally(() => setProcessing(false));
     };
@@ -65,12 +56,13 @@ function ConvertTab() {
             disabled: false,
             selected: selectedTab === Tabs.FIRST_SUBTITLE,
             content: () => (
-                <SingleSubtitleTab subtitle={subtitleStore.firstSubtitle} button="Download first subtitle as SubRip"/>)
+                <SingleSubtitleTab subtitle={subtitleStore.firstSubtitle}
+                                   button="Download first subtitle as SubRip"/>)
         },
         {
             id: Tabs.SECOND_SUBTITLE,
             name: Tabs.SECOND_SUBTITLE,
-            disabled: !subtitleStore.secondSubtitle.loaded,
+            disabled: !subtitleStore.secondSubtitle?.isOk(),
             selected: selectedTab === Tabs.SECOND_SUBTITLE,
             content: () => (
                 <SingleSubtitleTab subtitle={subtitleStore.secondSubtitle}
@@ -90,16 +82,17 @@ function ConvertTab() {
         <>
             <div ref={formElement}>
                 <SubtitleForm isProcessing={isProcessing} onSubmit={processFile}
-                              firstSubtitleError={firstSubtitleError} secondSubtitleError={secondSubtitleError}/>
+                              firstSubtitleValid={subtitleStore.firstSubtitle === undefined || subtitleStore.firstSubtitle.isOk()}
+                              secondSubtitleValid={subtitleStore.secondSubtitle === undefined || subtitleStore.secondSubtitle.isOk()}/>
             </div>
 
-            <div ref={subtitleElement}>
+            <div ref={subtitleElement} className="my-2">
                 {
-                    (subtitleStore.firstSubtitle.loaded) && (
+                    (subtitleStore.firstSubtitle?.isOk()) && (
                         <Card>
                             <Card.Header>
                                 <Nav variant="tabs" activeKey={tab.id}
-                                     onSelect={(tab: string) => setSelectedTab(tab as Tabs)}>
+                                     onSelect={(tab: string | null) => setSelectedTab(tab as Tabs)}>
                                     {
                                         availableTabs.map(t => (
                                             <Nav.Item>

@@ -1,12 +1,12 @@
-import React from "react";
-import {Button, Card} from "react-bootstrap";
-import {observer} from "mobx-react";
-import {downloadAsFile} from "../../utils/file";
-import {Subtitle} from "../../stores/subtitle-store";
-import SubtitlePreview from "../subtitle-preview";
+import React from 'react';
+import {Button, Card} from 'react-bootstrap';
+import {observer} from 'mobx-react-lite';
+import {downloadAsFile} from '../../utils/file';
+import {BadSubtitle, Subtitle} from '../../stores/subtitle-store';
+import SubtitlePreview from '../subtitle-preview';
 
-function SingleSubtitleTab({subtitle, button}: { subtitle?: Subtitle, button:string }) {
-    if (!subtitle) {
+function SingleSubtitleTab({subtitle, button}: { subtitle?: Subtitle | BadSubtitle | undefined, button: string }) {
+    if (!subtitle?.isOk()) {
         return null;
     }
 
@@ -19,7 +19,7 @@ function SingleSubtitleTab({subtitle, button}: { subtitle?: Subtitle, button:str
             <Card.Title>General subtitle information</Card.Title>
             <Card.Text>
                 Type: {subtitle.type}<br/>
-                FPS: {subtitle.fps || 'no matter'}<br/>
+                FPS: {subtitle.fps || 'not defined'}<br/>
                 Encoding: {subtitle.encoding}<br/>
                 <br/>
                 Number of units: {subtitle.lines.length}<br/>

@@ -1,0 +1,23 @@
+<SAMI>
+<HEAD>
+<TITLE>Dummy SAMI subtitles</TITLE>
+<STYLE TYPE="text/css">
+P { margin-left:0pt; margin-right:0pt; margin-bottom:10pt;
+    margin-top:10pt; font-size:17pt; text-align:center;
+    font-family:Arial; font-weight:normal; color:white;
+    }
+.my-style { Name:Korean; lang:kr-KR; SAMIType:CC; }
+</STYLE>
+</HEAD>
+<BODY>
+<!--
+Created by RicoRodriges
+-->
+<SYNC Start=61000><P Class=my-style>
+<i>Line 1</i>
+<SYNC Start=62000><P Class=my-style>&nbsp;
+<SYNC Start=63000><P Class=my-style>
+Line 🐷<br>Line 3
+<SYNC Start=64000><P Class=my-style>&nbsp;
+</BODY>
+</SAMI>

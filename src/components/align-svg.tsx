@@ -1,5 +1,5 @@
-import React from "react";
-import {Align} from "../types";
+import React from 'react';
+import {Align} from '../types';
 
 function AlignSVG({align, width}: { align: Align, width: number }) {
     let pos1: { x: number, y: number };

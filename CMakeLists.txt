@@ -10,19 +10,20 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ../public)
 add_executable(subtitles
         cpp/main.c
         cpp/subtitle.c
-        cpp/libass-0.14.0/libass/ass.c
-        cpp/libass-0.14.0/libass/ass_library.c
-        cpp/libass-0.14.0/libass/ass_utils.c
-        cpp/libass-0.14.0/libass/ass_string.c
-        cpp/libass-0.14.0/libass/ass_strtod.c)
+        cpp/demux.c
+        cpp/libass/libass/ass.c
+        cpp/libass/libass/ass_library.c
+        cpp/libass/libass/ass_utils.c
+        cpp/libass/libass/ass_string.c
+        cpp/libass/libass/ass_strtod.c)
 target_include_directories(subtitles PUBLIC
-        cpp # need for config.h file
-        cpp/libass-0.14.0)
+        cpp
+        cpp/libass)
 # add empty config.h file
 set_target_properties(subtitles PROPERTIES LINK_FLAGS " \
          -s WASM=1 \
-         -s BINARYEN_METHOD='native-wasm' \
-         -s TOTAL_MEMORY=536870912 \
-         -s EXTRA_EXPORTED_RUNTIME_METHODS='[ccall]' \
-         -s EXPORTED_FUNCTIONS='[_parse]' \
+         -s INITIAL_MEMORY=536870912 \
+         -s EXPORTED_RUNTIME_METHODS='[lengthBytesUTF8,stringToUTF8]' \
+         -s EXPORTED_FUNCTIONS='[_parse,_malloc,_free]' \
+         -sMODULARIZE -s EXPORT_NAME='createMyModule' \
          -s FILESYSTEM=0")

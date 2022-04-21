@@ -1,38 +1,41 @@
 
 export function downloadAsFile(data: string, filename: string) {
-    const fileContent = new Blob([data], {type: 'text/plain'});
-    if (window.navigator.msSaveOrOpenBlob) { // IE10+
-        window.navigator.msSaveOrOpenBlob(fileContent, filename);
-    } else {
-        const a = document.createElement('a');
-        const url = URL.createObjectURL(fileContent);
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }, 0);
-    }
+    const url = URL.createObjectURL(new Blob([data], {type: 'text/plain'}));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 0);
 }
 
-export function readBytes(file: File, callback: (x: Uint8Array) => void) {
-    const reader = new FileReader();
-    reader.onloadend = (evt) => {
-        if (evt.target && evt.target.readyState === FileReader.DONE) {
-            callback(new Uint8Array(evt.target.result as ArrayBuffer));
-        }
-    };
-    reader.readAsArrayBuffer(file);
+export async function readBytes(file: Blob) {
+    return new Promise<Uint8Array>((r, rej) => {
+        const reader = new FileReader();
+        reader.onloadend = (evt) => {
+            if (evt.target?.readyState === FileReader.DONE) {
+                r(new Uint8Array(evt.target.result as ArrayBuffer));
+            } else {
+                rej();
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    });
 }
 
-export function readText(file: File, encoding: string, callback: (x: string) => void) {
-    const reader = new FileReader();
-    reader.onloadend = (evt) => {
-        if (evt.target && evt.target.readyState === FileReader.DONE) {
-            callback(evt.target.result as string);
-        }
-    };
-    reader.readAsText(file, encoding);
+export async function readText(file: Blob, encoding: string) {
+    return new Promise<string>((r, rej) => {
+        const reader = new FileReader();
+        reader.onloadend = (evt) => {
+            if (evt.target?.readyState === FileReader.DONE) {
+                r(evt.target.result as string);
+            } else {
+                rej();
+            }
+        };
+        reader.readAsText(file, encoding);
+    });
 }

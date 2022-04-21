@@ -1,6 +1,6 @@
 import React from 'react';
-import {Navbar} from "react-bootstrap";
-import ConvertTab from "./components/convert-tab";
+import {Navbar} from 'react-bootstrap';
+import ConvertTab from './components/convert-tab';
 
 function App() {
     return (

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './App';
-import SubtitleStore from "./stores/subtitle-store";
+import SubtitleStore from './stores/subtitle-store';
 
 const subtitleStore = new SubtitleStore();
 const secondSubtitle = new SubtitleStore();

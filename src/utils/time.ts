@@ -1,5 +1,5 @@
 export function ToTimeString(time: number, delim: string, msPad = 3) {
-    const ms = Math.floor(+(time % 1000).toPrecision(msPad)).toString().substr(0, msPad);
+    const ms = Math.floor(+(time % 1000).toPrecision(msPad)).toString().substring(0, msPad);
     const s = Math.floor(time / 1000) % 60;
     const m = Math.floor(time / 1000 / 60) % 60;
     const h = Math.floor(time / 1000 / 60 / 60);
